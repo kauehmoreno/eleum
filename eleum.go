@@ -28,7 +28,6 @@ var (
 type Eleum struct {
 	cache        *sync.Map
 	expiration   *sync.Map
-	ctx          context.Context
 	readTimeout  time.Duration
 	writeTimeout time.Duration
 	maxNumofKeys uint64
@@ -69,7 +68,6 @@ type Options func(eleum *Eleum)
 func singleton(opts ...Options) *Eleum {
 	once.Do(func() {
 		eleum = &Eleum{
-			ctx:          context.Background(),
 			readTimeout:  time.Millisecond * 50,
 			writeTimeout: time.Millisecond * 50,
 			maxNumofKeys: 1000000,
@@ -90,27 +88,35 @@ func singleton(opts ...Options) *Eleum {
 func New(opts ...Options) *Eleum {
 	defer pool.Put(singleton(opts...))
 	return pool.Get().(*Eleum)
+	// return singleton(opts...)
 }
 
 // Get return a value type converted inplace to expected one
 // an error can be throw if there is no value for the expected key or if
 // converting result into byte returns error...
 func (c *Eleum) Get(key string, value interface{}) error {
-	ctx, cancel := context.WithTimeout(c.ctx, c.readTimeout)
+	key = hashKey(key)
+	resp, ok := c.cache.Load(key)
+	if !ok {
+		return errors.New("Cache is nil")
+	}
+
+	if byted, ok := resp.([]byte); ok {
+		return msgpack.Unmarshal(byted, &value)
+	}
+	return errors.New("Value type error - stored value is not a byte type")
+}
+
+// GetWithContext use context timeout to avoid operation to take longer than expected
+func (c *Eleum) GetWithContext(parentCtx context.Context, key string, value interface{}) error {
+	ctx, cancel := context.WithTimeout(parentCtx, c.readTimeout)
 	defer cancel()
 	done := make(chan execControl)
 
 	go func(done chan<- execControl) {
-		var err error
-		key = hashKey(key)
-		resp, ok := c.cache.Load(key)
-		if !ok {
-			err = errors.New("Cache is nil")
-		}
-		done <- execControl{
-			err:     err,
-			content: resp,
-		}
+		err := c.Get(key, value)
+		done <- execControl{err: err}
+		return
 	}(done)
 
 	select {
@@ -146,23 +152,27 @@ func (c *Eleum) TotalKeys() uint64 {
 // if object get to big and exceed the maximum size determined
 // it will not set more value into it until size get lower
 func (c *Eleum) Set(key string, value interface{}) error {
-	ctx, cancel := context.WithTimeout(c.ctx, c.writeTimeout)
 	defer c.incr()
+	key = hashKey(key)
+	v, err := msgpack.Marshal(value)
+	if err != nil {
+		return err
+	}
+	if c.TotalKeys() >= c.maxNumofKeys {
+		return errors.New("Lock contention - cache is to big")
+	}
+	c.cache.Store(key, v)
+	return nil
+
+}
+
+// SetWithContext use context timeout to avoid operation to take longer than expected
+func (c *Eleum) SetWithContext(parentCtx context.Context, key string, value interface{}) error {
+	ctx, cancel := context.WithTimeout(parentCtx, c.writeTimeout)
 	defer cancel()
 	done := make(chan execControl)
 	go func(done chan<- execControl) {
-		key = hashKey(key)
-		v, err := msgpack.Marshal(value)
-		if err != nil {
-			done <- execControl{err: err}
-			return
-		}
-		if c.TotalKeys() >= c.maxNumofKeys {
-			done <- execControl{err: errors.New("Lock contention - cache is to big")}
-			return
-		}
-		c.cache.Store(key, v)
-		done <- execControl{}
+		c.Set(key, value)
 	}(done)
 
 	select {
@@ -178,21 +188,9 @@ func (c *Eleum) Set(key string, value interface{}) error {
 // expire only set a key to be expired but does not execute in fact
 // this operations is made by BackgroundCheck method
 func (c *Eleum) Expire(key string, t time.Duration) error {
-	ctx, cancel := context.WithTimeout(c.ctx, c.writeTimeout)
-	defer cancel()
-	done := make(chan execControl)
-	go func(done chan<- execControl) {
-		key = hashKey(key)
-		c.expiration.Store(key, t)
-		done <- execControl{}
-	}(done)
-
-	select {
-	case resp := <-done:
-		return resp.err
-	case <-ctx.Done():
-		return ctx.Err()
-	}
+	key = hashKey(key)
+	c.expiration.Store(key, t)
+	return nil
 }
 
 // Background should be used one time preferably.
