@@ -121,13 +121,7 @@ func (c *Eleum) GetWithContext(parentCtx context.Context, key string, value inte
 
 	select {
 	case resp := <-done:
-		if resp.err != nil {
-			return resp.err
-		}
-		if byted, ok := resp.content.([]byte); ok {
-			return msgpack.Unmarshal(byted, &value)
-		}
-		return errors.New("Value type error - stored value is not a byte type")
+		return resp.err
 	case <-ctx.Done():
 		return ctx.Err()
 	}
@@ -172,7 +166,9 @@ func (c *Eleum) SetWithContext(parentCtx context.Context, key string, value inte
 	defer cancel()
 	done := make(chan execControl)
 	go func(done chan<- execControl) {
-		c.Set(key, value)
+		err := c.Set(key, value)
+		done <- execControl{err: err}
+		return
 	}(done)
 
 	select {
@@ -210,8 +206,16 @@ func (c *Eleum) Background(t time.Duration) {
 	}()
 }
 
-// Delete allow erase a key explicity
-func (c *Eleum) Delete(key string) {
+// Del allow erase a key explicity
+func (c *Eleum) Del(key string) {
+	key = hashKey(key)
+	c.cache.Delete(key)
+	c.expiration.Delete(key)
+	c.decr()
+}
+
+// Flushall erase all keys at once
+func (c *Eleum) Flushall() {
 	c.cache.Range(func(k interface{}, value interface{}) bool {
 		c.cache.Delete(k)
 		c.expiration.Delete(k)
