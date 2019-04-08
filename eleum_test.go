@@ -1,6 +1,7 @@
 package eleum_test
 
 import (
+	"context"
 	"fmt"
 	"runtime"
 	"strconv"
@@ -69,7 +70,7 @@ func (s *eleumSuiteCase) TestDeletingKeyExplicity() {
 	err = s.cache.Get(k, &expect)
 	s.Require().NoError(err, "Should return error on get value")
 	s.Require().Equal(expect, "teste", "Expect value should match the return one")
-	s.cache.Delete(k)
+	s.cache.Del(k)
 	err = s.cache.Get(k, &expect)
 	s.Require().Error(err, "Should not contains value for this key")
 }
@@ -106,7 +107,7 @@ func (s *eleumSuiteCase) TestErroOnMaximumSizeReached() {
 	s.Require().EqualError(err, "Lock contention - cache is to big")
 	for i := 0; i <= 11; i++ {
 		key := eleum.FormatKey("key", strconv.FormatInt(int64(i), 10))
-		cache.Delete(key)
+		cache.Del(key)
 	}
 }
 
@@ -116,6 +117,47 @@ func (s *eleumSuiteCase) TestTotalKeys() {
 	s.cache.Set("key:new1", 2)
 	total := s.cache.TotalKeys()
 	s.Require().Equal(total, base+uint64(2), "Should contains two keys")
+}
+
+func (s *eleumSuiteCase) TestDecrOnDeleteKeyGettingTotalKeys() {
+	s.cache.Set("key:new", 1)
+	s.cache.Set("key:new1", 2)
+	total := s.cache.TotalKeys()
+	s.cache.Del("key:new")
+	newTotal := s.cache.TotalKeys()
+	s.Require().Equal(newTotal, total-uint64(1), "Should have total key less one cause it was erase")
+}
+
+func (s *eleumSuiteCase) TestFlushall() {
+	base := s.cache.TotalKeys()
+	s.cache.Set("key:new", 1)
+	s.cache.Set("key:new1", 2)
+	s.cache.Set("key:new3", 2)
+	total := s.cache.TotalKeys()
+	s.Require().Equal(total, base+uint64(3), "Should contains all keys")
+
+	s.cache.Flushall()
+	newTotal := s.cache.TotalKeys()
+
+	s.Require().Equal(newTotal, uint64(1), "Should contains at least one key")
+}
+
+func (s *eleumSuiteCase) TestGetWithContext() {
+	ctx := context.Background()
+	s.cache.SetWithContext(ctx, "key:new12", 10)
+	var expected int
+	err := s.cache.GetWithContext(ctx, "key:new12", &expected)
+	s.Require().NoError(err, "Should not return erro on get value with context")
+	s.Require().Equal(expected, 10, "Value should be = 10")
+}
+
+func (s *eleumSuiteCase) TestSetWithContext() {
+	ctx := context.Background()
+	s.cache.SetWithContext(ctx, "key:new321", 10)
+	var expected int
+	err := s.cache.GetWithContext(ctx, "key:new321", &expected)
+	s.Require().NoError(err, "Should not return erro on get value with context")
+	s.Require().Equal(expected, 10, "Value should be = 10")
 }
 
 // benchmark tests
@@ -182,6 +224,30 @@ func BenchmarkSetKeytInParallel(b *testing.B) {
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
 				key := eleum.FormatKey("key2", strconv.FormatInt(int64(i), 10))
+				cache.Set(key, "string teste")
+			}
+		})
+	}
+}
+
+func BenchmarkSetWithContextKeyIntoCache(b *testing.B) {
+	cache := eleum.New()
+	for i := 1; i <= 2048; i *= 2 {
+		b.Run(fmt.Sprintf("Set key with context %d\n", i), func(b *testing.B) {
+			for n := 0; n <= b.N; n++ {
+				key := eleum.FormatKey("key", strconv.FormatInt(int64(n*2), 10))
+				cache.Set(key, "string teste")
+			}
+		})
+	}
+}
+
+func BenchmarkSetWithContextKeytInParallel(b *testing.B) {
+	cache := eleum.New()
+	for i := 1; i <= 2048; i *= 2 {
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				key := eleum.FormatKey("key3", strconv.FormatInt(int64(i), 10))
 				cache.Set(key, "string teste")
 			}
 		})
