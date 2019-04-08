@@ -1,13 +1,13 @@
 package eleum_test
 
 import (
+	"fmt"
 	"runtime"
 	"strconv"
 	"testing"
 	"time"
 
 	"github.com/kauehmoreno/eleum"
-
 	"github.com/stretchr/testify/suite"
 )
 
@@ -119,3 +119,71 @@ func (s *eleumSuiteCase) TestTotalKeys() {
 }
 
 // benchmark tests
+
+func BenchmarkTestInstanceAllocationsOnMultipleCalls(b *testing.B) {
+	for i := 1; i <= 2048; i *= 2 {
+		b.Run(fmt.Sprintf("CacheInstance %d\n", i), func(b *testing.B) {
+			for n := 0; n <= b.N; n++ {
+				eleum.New()
+			}
+		})
+	}
+}
+
+func BenchmarkTestInstanceAllocationOnParallelCalls(b *testing.B) {
+	for i := 1; i <= 2048; i *= 2 {
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				eleum.New()
+			}
+		})
+	}
+}
+
+func BenchmarkGetKeyThatDoesNotExist(b *testing.B) {
+	cache := eleum.New()
+	for i := 1; i <= 2048; i *= 2 {
+		b.Run(fmt.Sprintf("Get not existing key %d\n", i), func(b *testing.B) {
+			for n := 0; n <= b.N; n++ {
+				var expected string
+				cache.Get("key", &expected)
+			}
+		})
+	}
+}
+
+func BenchmarkGetKeyThatDoesNotExistInParallel(b *testing.B) {
+	cache := eleum.New()
+	for i := 1; i <= 2048; i *= 2 {
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				var expected string
+				cache.Get("key", &expected)
+			}
+		})
+	}
+}
+
+func BenchmarkSetKeyIntoCache(b *testing.B) {
+	cache := eleum.New()
+	for i := 1; i <= 2048; i *= 2 {
+		b.Run(fmt.Sprintf("Set key %d\n", i), func(b *testing.B) {
+			for n := 0; n <= b.N; n++ {
+				key := eleum.FormatKey("key", strconv.FormatInt(int64(n), 10))
+				cache.Set(key, "string teste")
+			}
+		})
+	}
+}
+
+func BenchmarkSetKeytInParallel(b *testing.B) {
+	cache := eleum.New()
+	for i := 1; i <= 2048; i *= 2 {
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				key := eleum.FormatKey("key2", strconv.FormatInt(int64(i), 10))
+				cache.Set(key, "string teste")
+			}
+		})
+	}
+}
