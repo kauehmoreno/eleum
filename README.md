@@ -138,7 +138,6 @@ eleum.New().Background(time.Minute)
 | BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_2048_-4        |   	  300000	 |     6148 ns/op	 |    255 B/op	  |     7 allocs/op  | 
 | BenchmarkSetWithContextKeytInParallel-4                                 |   	   20000	 |    77490 ns/op	 |   2856 B/op	  |    79 allocs/op  | 
 
-This will create the dillinger image and pull in the necessary dependencies. Be sure to swap out `${package.json.version}` with the actual version of Dillinger.
 
 License
 ----
