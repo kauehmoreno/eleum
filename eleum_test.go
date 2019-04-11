@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/kauehmoreno/eleum"
+
 	"github.com/stretchr/testify/suite"
 )
 
@@ -158,6 +159,28 @@ func (s *eleumSuiteCase) TestSetWithContext() {
 	err := s.cache.GetWithContext(ctx, "key:new321", &expected)
 	s.Require().NoError(err, "Should not return erro on get value with context")
 	s.Require().Equal(expected, 10, "Value should be = 10")
+}
+
+func (s *eleumSuiteCase) TestTotalKeyOnMultiplesGoroutines() {
+	s.cache.Flushall()
+	for i := 0; i <= 50; i++ {
+		go func(i int) {
+			s.cache.Set(
+				eleum.FormatKey(
+					"key", strconv.FormatInt(int64(i), 10),
+				), "test string value",
+			)
+		}(i)
+	}
+	total := s.cache.TotalKeys()
+	time.Sleep(time.Second * 2)
+	finalTotal := s.cache.TotalKeys()
+	s.Require().Condition(func() bool {
+		return total < finalTotal
+	}, "Final total should be greater than initial one")
+	s.Require().Condition(func() bool {
+		return finalTotal >= uint64(50) && finalTotal <= uint64(52)
+	}, "Should have between 50 or 52 keys once atomic operations might have snapshot of values")
 }
 
 // benchmark tests

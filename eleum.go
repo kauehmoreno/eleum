@@ -127,16 +127,20 @@ func (c *Eleum) GetWithContext(parentCtx context.Context, key string, value inte
 	}
 }
 
-func (c *Eleum) incr() {
-	atomic.AddUint64(&c.numKeys, 1)
+func (c *Eleum) incr() uint64 {
+	return atomic.AddUint64(&c.numKeys, 1)
 }
 
-func (c *Eleum) decr() {
-	atomic.AddUint64(&c.numKeys, ^uint64(0))
+func (c *Eleum) decr() uint64 {
+	return atomic.AddUint64(&c.numKeys, ^uint64(0))
 }
 
 // TotalKeys returns total of keys set on cache
 // it is safe to call with multiple goroutines
+// TotalKey may not represent current value of numKeys once
+// it loads a copy of the current value is returned
+// other goroutine might change while this is happening...
+// it's probably hold more values than expected
 func (c *Eleum) TotalKeys() uint64 {
 	return atomic.LoadUint64(&c.numKeys)
 }
