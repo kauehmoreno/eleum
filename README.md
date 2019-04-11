@@ -8,6 +8,11 @@ eleum is an instance cache provider to avoid  i/o operation. It was made to be s
   - Simple
   - Fast
 
+
+# Install 
+`go get -u github.com/kauehmoreno/eleum`
+
+
 # Usage
 #### Simple One
 ```go
@@ -140,6 +145,13 @@ eleum.New().Background(time.Minute)
 
 
 All benchmark tests were made on IMAC Intel(R) Core(TM) i5-7400 CPU @ 3.00GHz
+
+### Third Party Libraries
+| Name | Author | Description | 
+| ------ | ------ | ------ | 
+| ------ | ------ | ------ | 
+| [Msgpack](https://github.com/vmihailenco/msgpack) | [Vladimir Mihailenco](https://github.com/vmihailenco) | MessagePack encoding for Golang |
+| [xxhash](https://github.com/cespare/xxhash) | [Caleb Spare](https://github.com/cespare) |  xxhash is a Go implementation of the 64-bit xxHash algorithm |
 
 License
 ----
