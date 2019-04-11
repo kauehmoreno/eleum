@@ -80,7 +80,7 @@ eleum.New().Expire(key, time.Second*30)
 
 ### Background()
  - A goroutine is started to operate background check to expire all keys based - on expiration set from each key
- - it runs on time ticker defined by client 
+ - it runs a time ticker defined by client 
  -  Background should be used one time preferably. 
  ```go 
 eleum.New().Background(time.Minute)
