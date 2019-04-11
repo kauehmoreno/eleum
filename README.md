@@ -65,7 +65,7 @@ total:= cache.TotalKeys()
  eleum.New().Flushall()
 ```
 ### Del()
- - Return total of keys on cache object
+ - Delete a key from cache object
 ```go 
 eleum.New().Del("key")
 ```
