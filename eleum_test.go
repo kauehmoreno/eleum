@@ -183,6 +183,25 @@ func (s *eleumSuiteCase) TestTotalKeyOnMultiplesGoroutines() {
 	}, "Should have between 50 or 52 keys once atomic operations might have snapshot of values")
 }
 
+func (s *eleumSuiteCase) TestGetElementAfterSetAnStructType() {
+	person := struct {
+		Name string
+		Age  uint16
+	}{"Kaueh", 26}
+	err := s.cache.Set("mykey", person)
+	s.Require().NoError(err, "Set value should not fail")
+	expected := struct {
+		Name string
+		Age  uint16
+	}{}
+	err = s.cache.Get("mykey", &expected)
+	s.Require().NoError(err, "Get value should not fail")
+
+	s.Require().Equal(expected.Name, person.Name, "Both name should be the same")
+	s.Require().Equal(expected.Age, person.Age, "Both age should be the same")
+
+}
+
 // benchmark tests
 
 func BenchmarkTestInstanceAllocationsOnMultipleCalls(b *testing.B) {
