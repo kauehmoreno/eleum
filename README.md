@@ -139,6 +139,8 @@ eleum.New().Background(time.Minute)
 | BenchmarkSetWithContextKeytInParallel-4                                 |   	   20000	 |    77490 ns/op	 |   2856 B/op	  |    79 allocs/op  | 
 
 
+All benchmark tests were made on IMAC Intel(R) Core(TM) i5-7400 CPU @ 3.00GHz
+
 License
 ----
 
