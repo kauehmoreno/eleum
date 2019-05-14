@@ -9,6 +9,8 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/vmihailenco/msgpack"
 
 	"github.com/cespare/xxhash"
@@ -26,12 +28,18 @@ var (
 
 // Eleum is a type representation similar to the L1 cache type
 type Eleum struct {
-	cache        *sync.Map
-	expiration   *sync.Map
+	cache        map[string][]byte
+	mutex        *sync.RWMutex
 	readTimeout  time.Duration
 	writeTimeout time.Duration
+	exp          chan expiration
 	maxNumofKeys uint64
 	numKeys      uint64
+}
+
+type expiration struct {
+	key string
+	t   time.Duration
 }
 
 type execControl struct {
@@ -71,8 +79,9 @@ func singleton(opts ...Options) *Eleum {
 			readTimeout:  time.Millisecond * 50,
 			writeTimeout: time.Millisecond * 50,
 			maxNumofKeys: 1000000,
-			cache:        &sync.Map{},
-			expiration:   &sync.Map{},
+			mutex:        &sync.RWMutex{},
+			cache:        make(map[string][]byte, 1000000),
+			exp:          make(chan expiration, 1000000),
 		}
 	})
 
@@ -88,7 +97,6 @@ func singleton(opts ...Options) *Eleum {
 func New(opts ...Options) *Eleum {
 	defer pool.Put(singleton(opts...))
 	return pool.Get().(*Eleum)
-	// return singleton(opts...)
 }
 
 // Get return a value type converted inplace to expected one
@@ -96,15 +104,18 @@ func New(opts ...Options) *Eleum {
 // converting result into byte returns error...
 func (c *Eleum) Get(key string, value interface{}) error {
 	key = hashKey(key)
-	resp, ok := c.cache.Load(key)
+	c.mutex.RLock()
+	data, ok := c.cache[key]
+	c.mutex.RUnlock()
 	if !ok {
 		return errors.New("Cache is nil")
 	}
+	return msgpack.Unmarshal(data, &value)
+}
 
-	if byted, ok := resp.([]byte); ok {
-		return msgpack.Unmarshal(byted, &value)
-	}
-	return errors.New("Value type error - stored value is not a byte type")
+func trackExecution(t time.Time, name string) {
+	elapse := time.Since(t)
+	logrus.Infof("%s leveu %s", name, elapse)
 }
 
 // GetWithContext use context timeout to avoid operation to take longer than expected
@@ -134,6 +145,9 @@ func (c *Eleum) incr() uint64 {
 func (c *Eleum) decr() uint64 {
 	return atomic.AddUint64(&c.numKeys, ^uint64(0))
 }
+func (c *Eleum) zeroCount() uint64 {
+	return atomic.SwapUint64(&c.numKeys, 0)
+}
 
 // TotalKeys returns total of keys set on cache
 // it is safe to call with multiple goroutines
@@ -152,16 +166,18 @@ func (c *Eleum) TotalKeys() uint64 {
 func (c *Eleum) Set(key string, value interface{}) error {
 	defer c.incr()
 	key = hashKey(key)
-	v, err := msgpack.Marshal(value)
+	data, err := msgpack.Marshal(value)
 	if err != nil {
 		return err
 	}
 	if c.TotalKeys() >= c.maxNumofKeys {
 		return errors.New("Lock contention - cache is to big")
 	}
-	c.cache.Store(key, v)
-	return nil
 
+	defer c.mutex.Unlock()
+	c.mutex.Lock()
+	c.cache[key] = data
+	return nil
 }
 
 // SetWithContext use context timeout to avoid operation to take longer than expected
@@ -189,7 +205,7 @@ func (c *Eleum) SetWithContext(parentCtx context.Context, key string, value inte
 // this operations is made by BackgroundCheck method
 func (c *Eleum) Expire(key string, t time.Duration) error {
 	key = hashKey(key)
-	c.expiration.Store(key, t)
+	c.exp <- expiration{key: key, t: t}
 	return nil
 }
 
@@ -197,35 +213,33 @@ func (c *Eleum) Expire(key string, t time.Duration) error {
 // A goroutine is started to combine usage with expire method
 func (c *Eleum) Background(t time.Duration) {
 	go func() {
-		ticker := time.NewTicker(t)
-		defer ticker.Stop()
-		for range ticker.C {
-			c.expiration.Range(func(key interface{}, value interface{}) bool {
-				c.cache.Delete(key)
-				c.expiration.Delete(key)
-				c.decr()
-				return true
-			})
-		}
+		expire := <-c.exp
+		time.AfterFunc(expire.t, func() {
+			defer c.mutex.Unlock()
+			c.mutex.Lock()
+			delete(c.cache, expire.key)
+			c.decr()
+		})
 	}()
 }
 
 // Del allow erase a key explicity
 func (c *Eleum) Del(key string) {
 	key = hashKey(key)
-	c.cache.Delete(key)
-	c.expiration.Delete(key)
+	defer c.mutex.Unlock()
+	c.mutex.Lock()
+	delete(c.cache, key)
 	c.decr()
 }
 
 // Flushall erase all keys at once
 func (c *Eleum) Flushall() {
-	c.cache.Range(func(k interface{}, value interface{}) bool {
-		c.cache.Delete(k)
-		c.expiration.Delete(k)
-		c.decr()
-		return true
-	})
+	c.mutex.Lock()
+	for key := range c.cache {
+		delete(c.cache, key)
+	}
+	c.zeroCount()
+	c.mutex.Unlock()
 }
 
 // FormatKey is an helper to build keyValue
