@@ -224,6 +224,59 @@ func BenchmarkTestInstanceAllocationOnParallelCalls(b *testing.B) {
 	}
 }
 
+func BenchmarkTestGetExistingKeyUnmarshalStruct(b *testing.B) {
+	data := struct {
+		Name   string
+		Age    int
+		Height int
+		Weight int
+	}{"Teste", 20, 80, 181}
+
+	cache := eleum.New(eleum.MaxNumOfKeys(2000))
+	cache.Set("test-key-2", data)
+	for i := 1; i <= 2048; i *= 2 {
+		b.Run(fmt.Sprintf("Get existing key %d\n", i), func(b *testing.B) {
+			for n := 0; n <= b.N; n++ {
+				expected := struct {
+					Name   string
+					Age    int
+					Height int
+					Weight int
+				}{}
+				cache.Get("test-key-2", &expected)
+			}
+		})
+	}
+}
+
+func BenchmarkTestGetExistingKeyUnmarshalStructInParallel(b *testing.B) {
+	data := struct {
+		Name   string
+		Age    int
+		Height int
+		Weight int
+	}{"Teste", 20, 80, 181}
+	c := eleum.New(eleum.MaxNumOfKeys(2000))
+	if err := c.Set("key-test", data); err != nil {
+		c.Flushall()
+		b.Errorf("fail to set value into cache %v", err)
+	}
+
+	for i := 1; i <= 2048; i *= 2 {
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				expected := struct {
+					Name   string
+					Age    int
+					Height int
+					Weight int
+				}{}
+				c.Get("key", &expected)
+			}
+		})
+	}
+}
+
 func BenchmarkGetKeyThatDoesNotExist(b *testing.B) {
 	cache := eleum.New()
 	for i := 1; i <= 2048; i *= 2 {
