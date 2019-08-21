@@ -90,59 +90,71 @@ eleum.New().Background(time.Minute)
 
 | Operation | NumOp | TimeOp | BytesOp | allocOp |
 | ------ | ------ | ------ |  ------ | ------ |
-| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_1_-4      |   	 1000000	 |     1509 ns/op	 |      0 B/op	  |     0 allocs/op  | 
-| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_2_-4      |   	 1000000	 |     1545 ns/op	 |      0 B/op	  |     0 allocs/op  | 
-| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_4_-4      |   	 1000000	 |     1571 ns/op	 |      0 B/op	  |     0 allocs/op  | 
-| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_8_-4      |   	 1000000	 |     1692 ns/op	 |      0 B/op	  |     0 allocs/op  | 
-| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_16_-4     |   	 1000000	 |     1595 ns/op	 |      0 B/op	  |     0 allocs/op  | 
-| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_32_-4     |   	 1000000	 |     1450 ns/op	 |      0 B/op	  |     0 allocs/op  | 
-| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_64_-4     |   	 1000000	 |     1484 ns/op	 |      0 B/op	  |     0 allocs/op  | 
-| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_128_-4    |   	 1000000	 |     1558 ns/op	 |      0 B/op	  |     0 allocs/op  | 
-| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_256_-4    |   	 1000000	 |     1607 ns/op	 |      0 B/op	  |     0 allocs/op  | 
-| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_512_-4    |   	 1000000	 |     1734 ns/op	 |      0 B/op	  |     0 allocs/op  | 
-| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_1024_-4   |   	 1000000	 |     1503 ns/op	 |      0 B/op	  |     0 allocs/op  | 
-| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_2048_-4   |   	 1000000	 |     1540 ns/op	 |      0 B/op	  |     0 allocs/op  | 
-| BenchmarkTestInstanceAllocationOnParallelCalls-4                        |   	   50000	 |    32661 ns/op	 |      0 B/op	  |     0 allocs/op  | 
-| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_1_-4               |   	 1000000	 |     1695 ns/op	 |     80 B/op	  |     4 allocs/op  | 
-| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_2_-4               |   	 1000000	 |     1767 ns/op	 |     80 B/op	  |     4 allocs/op  | 
-| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_4_-4               |   	 1000000	 |     1876 ns/op	 |     80 B/op	  |     4 allocs/op  | 
-| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_8_-4               |   	 1000000	 |     1776 ns/op	 |     80 B/op	  |     4 allocs/op  | 
-| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_16_-4              |   	 1000000	 |     1725 ns/op	 |     80 B/op	  |     4 allocs/op  | 
-| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_32_-4              |   	 1000000	 |     1744 ns/op	 |     80 B/op	  |     4 allocs/op  | 
-| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_64_-4              |   	 1000000	 |     1824 ns/op	 |     80 B/op	  |     4 allocs/op  | 
-| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_128_-4             |   	 1000000	 |     1750 ns/op	 |     80 B/op	  |     4 allocs/op  | 
-| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_256_-4             |   	 1000000	 |     1746 ns/op	 |     80 B/op	  |     4 allocs/op  | 
-| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_512_-4             |   	 1000000	 |     1755 ns/op	 |     80 B/op	  |     4 allocs/op  | 
-| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_1024_-4            |   	 1000000	 |     1670 ns/op	 |     80 B/op	  |     4 allocs/op  | 
-| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_2048_-4            |   	 1000000	 |     1717 ns/op	 |     80 B/op	  |     4 allocs/op  | 
-| BenchmarkGetKeyThatDoesNotExistInParallel-4                             |   	   50000	 |    27248 ns/op	 |    960 B/op	  |    48 allocs/op  | 
-| BenchmarkSetKeyIntoCache/Set_key_1_-4                                   |   	  300000	 |     6145 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetKeyIntoCache/Set_key_2_-4                                   |   	  300000	 |     6213 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetKeyIntoCache/Set_key_4_-4                                   |   	  300000	 |     6700 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetKeyIntoCache/Set_key_8_-4                                   |   	  200000	 |     6316 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetKeyIntoCache/Set_key_16_-4                                  |   	  200000	 |     6489 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetKeyIntoCache/Set_key_32_-4                                  |   	  200000	 |     6220 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetKeyIntoCache/Set_key_64_-4                                  |   	  300000	 |     6101 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetKeyIntoCache/Set_key_128_-4                                 |   	  200000	 |     6368 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetKeyIntoCache/Set_key_256_-4                                 |   	  300000	 |     6017 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetKeyIntoCache/Set_key_512_-4                                 |   	  300000	 |     5981 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetKeyIntoCache/Set_key_1024_-4                                |   	  200000	 |     6218 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetKeyIntoCache/Set_key_2048_-4                                |   	  300000	 |     6005 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetKeytInParallel-4                                            |   	   20000	 |    77534 ns/op	 |   2856 B/op	  |    79 allocs/op  | 
-| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_1_-4           |   	  300000	 |     5879 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_2_-4           |   	  300000	 |     5846 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_4_-4           |   	  300000	 |     5786 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_8_-4           |   	  300000	 |     5915 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_16_-4          |   	  300000	 |     6136 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_32_-4          |   	  200000	 |     6044 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_64_-4          |   	  200000	 |     6157 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_128_-4         |   	  300000	 |     5936 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_256_-4         |   	  300000	 |     6072 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_512_-4         |   	  300000	 |     6016 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_1024_-4        |   	  200000	 |     6485 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_2048_-4        |   	  300000	 |     6148 ns/op	 |    255 B/op	  |     7 allocs/op  | 
-| BenchmarkSetWithContextKeytInParallel-4                                 |   	   20000	 |    77490 ns/op	 |   2856 B/op	  |    79 allocs/op  | 
-
+| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_1_-4      |   	 1000000	 |     1063 ns/op	 |      0 B/op	  |     0 allocs/op  | 
+| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_2_-4      |   	 1000000	 |     1098 ns/op	 |      0 B/op	  |     0 allocs/op  | 
+| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_4_-4      |   	 1000000	 |     1084 ns/op	 |      0 B/op	  |     0 allocs/op  | 
+| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_8_-4      |   	 1000000	 |     1048 ns/op	 |      0 B/op	  |     0 allocs/op  | 
+| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_16_-4     |   	 1000000	 |     1032 ns/op	 |      0 B/op	  |     0 allocs/op  | 
+| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_32_-4     |   	 1000000	 |     1037 ns/op	 |      0 B/op	  |     0 allocs/op  | 
+| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_64_-4     |   	 1000000	 |     1040 ns/op	 |      0 B/op	  |     0 allocs/op  | 
+| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_128_-4    |   	 1000000	 |     1039 ns/op	 |      0 B/op	  |     0 allocs/op  | 
+| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_256_-4    |   	 1000000	 |     1051 ns/op	 |      0 B/op	  |     0 allocs/op  | 
+| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_512_-4    |   	 1000000	 |     1017 ns/op	 |      0 B/op	  |     0 allocs/op  | 
+| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_1024_-4   |   	 1000000	 |     1044 ns/op	 |      0 B/op	  |     0 allocs/op  | 
+| BenchmarkTestInstanceAllocationsOnMultipleCalls/CacheInstance_2048_-4   |   	 1000000	 |     1033 ns/op	 |      0 B/op	  |     0 allocs/op  | 
+| BenchmarkTestInstanceAllocationOnParallelCalls-4                        |   	   50000	 |    23917 ns/op	 |      0 B/op	  |     0 allocs/op  | 
+| BenchmarkTestGetExistingKeyUnmarshalStruct/Get_existing_key_1_-4        |   	  100000	 |    18186 ns/op	 |    336 B/op	  |    11 allocs/op  | 
+| BenchmarkTestGetExistingKeyUnmarshalStruct/Get_existing_key_2_-4        |   	  100000	 |    18472 ns/op	 |    336 B/op	  |    11 allocs/op  | 
+| BenchmarkTestGetExistingKeyUnmarshalStruct/Get_existing_key_4_-4        |   	  100000	 |    18110 ns/op	 |    336 B/op	  |    11 allocs/op  | 
+| BenchmarkTestGetExistingKeyUnmarshalStruct/Get_existing_key_8_-4        |   	  100000	 |    17989 ns/op	 |    336 B/op	  |    11 allocs/op  | 
+| BenchmarkTestGetExistingKeyUnmarshalStruct/Get_existing_key_16_-4       |   	  100000	 |    19003 ns/op	 |    336 B/op	  |    11 allocs/op  | 
+| BenchmarkTestGetExistingKeyUnmarshalStruct/Get_existing_key_32_-4       |   	  100000	 |    19000 ns/op	 |    336 B/op	  |    11 allocs/op  | 
+| BenchmarkTestGetExistingKeyUnmarshalStruct/Get_existing_key_64_-4       |   	  100000	 |    19803 ns/op	 |    336 B/op	  |    11 allocs/op  | 
+| BenchmarkTestGetExistingKeyUnmarshalStruct/Get_existing_key_128_-4      |   	  100000	 |    18089 ns/op	 |    336 B/op	  |    11 allocs/op  | 
+| BenchmarkTestGetExistingKeyUnmarshalStruct/Get_existing_key_256_-4      |   	  100000	 |    18354 ns/op	 |    336 B/op	  |    11 allocs/op  | 
+| BenchmarkTestGetExistingKeyUnmarshalStruct/Get_existing_key_512_-4      |   	  100000	 |    18240 ns/op	 |    336 B/op	  |    11 allocs/op  | 
+| BenchmarkTestGetExistingKeyUnmarshalStruct/Get_existing_key_1024_-4     |   	  100000	 |    17926 ns/op	 |    336 B/op	  |    11 allocs/op  | 
+| BenchmarkTestGetExistingKeyUnmarshalStruct/Get_existing_key_2048_-4     |   	  100000	 |    18295 ns/op	 |    336 B/op	  |    11 allocs/op  | 
+| BenchmarkTestGetExistingKeyUnmarshalStructInParallel-4                  |   	  100000	 |    23617 ns/op	 |    960 B/op	  |    36 allocs/op  | 
+| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_1_-4               |   	 2000000	 |      827 ns/op	 |     48 B/op	  |     3 allocs/op  | 
+| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_2_-4               |   	 2000000	 |      856 ns/op	 |     48 B/op	  |     3 allocs/op  | 
+| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_4_-4               |   	 2000000	 |      815 ns/op	 |     48 B/op	  |     3 allocs/op  | 
+| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_8_-4               |   	 2000000	 |      799 ns/op	 |     48 B/op	  |     3 allocs/op  | 
+| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_16_-4              |   	 2000000	 |      888 ns/op	 |     48 B/op	  |     3 allocs/op  | 
+| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_32_-4              |   	 2000000	 |      773 ns/op	 |     48 B/op	  |     3 allocs/op  | 
+| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_64_-4              |   	 2000000	 |      833 ns/op	 |     48 B/op	  |     3 allocs/op  | 
+| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_128_-4             |   	 2000000	 |      768 ns/op	 |     48 B/op	  |     3 allocs/op  | 
+| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_256_-4             |   	 2000000	 |      819 ns/op	 |     48 B/op	  |     3 allocs/op  | 
+| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_512_-4             |   	 2000000	 |      872 ns/op	 |     48 B/op	  |     3 allocs/op  | 
+| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_1024_-4            |   	 2000000	 |      895 ns/op	 |     48 B/op	  |     3 allocs/op  | 
+| BenchmarkGetKeyThatDoesNotExist/Get_not_existing_key_2048_-4            |   	 2000000	 |      810 ns/op	 |     48 B/op	  |     3 allocs/op  | 
+| BenchmarkGetKeyThatDoesNotExistInParallel-4                             |   	  100000	 |    23867 ns/op	 |    576 B/op	  |    36 allocs/op  | 
+| BenchmarkSetKeyIntoCache/Set_key_1_-4                                   |   	  300000	 |     4128 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetKeyIntoCache/Set_key_2_-4                                   |   	  300000	 |     3972 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetKeyIntoCache/Set_key_4_-4                                   |   	  500000	 |     4224 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetKeyIntoCache/Set_key_8_-4                                   |   	  300000	 |     4211 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetKeyIntoCache/Set_key_16_-4                                  |   	  500000	 |     3835 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetKeyIntoCache/Set_key_32_-4                                  |   	  500000	 |     3900 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetKeyIntoCache/Set_key_64_-4                                  |   	  500000	 |     3967 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetKeyIntoCache/Set_key_128_-4                                 |   	  500000	 |     4085 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetKeyIntoCache/Set_key_256_-4                                 |   	  300000	 |     3916 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetKeyIntoCache/Set_key_512_-4                                 |   	  300000	 |     3811 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetKeyIntoCache/Set_key_1024_-4                                |   	  500000	 |     3927 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetKeyIntoCache/Set_key_2048_-4                                |   	  500000	 |     3887 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetKeytInParallel-4                                            |   	   50000	 |    38589 ns/op	 |   2856 B/op	  |    79 allocs/op  | 
+| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_1_-4           |   	  300000	 |     3828 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_2_-4           |   	  300000	 |     3790 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_4_-4           |   	  500000	 |     3802 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_8_-4           |   	  500000	 |     3867 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_16_-4          |   	  500000	 |     3848 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_32_-4          |   	  500000	 |     3833 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_64_-4          |   	  500000	 |     3829 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_128_-4         |   	  500000	 |     3860 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_256_-4         |   	  500000	 |     3826 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_512_-4         |   	  300000	 |     3872 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_1024_-4        |   	  500000	 |     3797 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetWithContextKeyIntoCache/Set_key_with_context_2048_-4        |   	  500000	 |     3836 ns/op	 |    255 B/op	  |     7 allocs/op  | 
+| BenchmarkSetWithContextKeytInParallel-4                                 |   	   50000	 |    37627 ns/op	 |   2856 B/op	  |    79 allocs/op  | 
 
 All benchmark tests were made on IMAC Intel(R) Core(TM) i5-7400 CPU @ 3.00GHz
 
@@ -150,7 +162,6 @@ All benchmark tests were made on IMAC Intel(R) Core(TM) i5-7400 CPU @ 3.00GHz
 | Name | Author | Description | 
 | ------ | ------ | ------ | 
 | [Msgpack](https://github.com/vmihailenco/msgpack) | [Vladimir Mihailenco](https://github.com/vmihailenco) | MessagePack encoding for Golang |
-| [xxhash](https://github.com/cespare/xxhash) | [Caleb Spare](https://github.com/cespare) |  xxhash is a Go implementation of the 64-bit xxHash algorithm |
 
 License
 ----
