@@ -3,15 +3,12 @@ package eleum
 import (
 	"context"
 	"errors"
-	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
 
 	"github.com/vmihailenco/msgpack"
-
-	"github.com/cespare/xxhash"
 )
 
 var (
@@ -70,7 +67,7 @@ func singleton(opts ...Options) *Eleum {
 		eleum = &Eleum{
 			readTimeout:  time.Millisecond * 50,
 			writeTimeout: time.Millisecond * 50,
-			maxNumofKeys: 1000000,
+			maxNumofKeys: 10000,
 			cache:        &sync.Map{},
 			expiration:   &sync.Map{},
 		}
@@ -95,7 +92,6 @@ func New(opts ...Options) *Eleum {
 // an error can be throw if there is no value for the expected key or if
 // converting result into byte returns error...
 func (c *Eleum) Get(key string, value interface{}) error {
-	key = hashKey(key)
 	resp, ok := c.cache.Load(key)
 	if !ok {
 		return errors.New("Cache is nil")
@@ -151,7 +147,6 @@ func (c *Eleum) TotalKeys() uint64 {
 // it will not set more value into it until size get lower
 func (c *Eleum) Set(key string, value interface{}) error {
 	defer c.incr()
-	key = hashKey(key)
 	v, err := msgpack.Marshal(value)
 	if err != nil {
 		return err
@@ -188,7 +183,6 @@ func (c *Eleum) SetWithContext(parentCtx context.Context, key string, value inte
 // expire only set a key to be expired but does not execute in fact
 // this operations is made by BackgroundCheck method
 func (c *Eleum) Expire(key string, t time.Duration) error {
-	key = hashKey(key)
 	c.expiration.Store(key, t)
 	return nil
 }
@@ -212,7 +206,6 @@ func (c *Eleum) Background(t time.Duration) {
 
 // Del allow erase a key explicity
 func (c *Eleum) Del(key string) {
-	key = hashKey(key)
 	c.cache.Delete(key)
 	c.expiration.Delete(key)
 	c.decr()
@@ -237,8 +230,4 @@ func FormatKey(key string, params ...string) string {
 		s.WriteString(param)
 	}
 	return s.String()
-}
-
-func hashKey(key string) string {
-	return strconv.FormatUint(xxhash.Sum64String(key), 10)
 }
